@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+#  cnosdb:
+#    image: cnosdb/cnosdb:v2.0.1
+#    container_name: cnosdb
+#    ports:
+#      - 31006:31006
+#      - 31007:31007
+#    environment:
+#      - cpu=2
+#      - memory=4
+  kafka:
+    image: kafka:latest
+    container_name: telegraf
+    volumes:
+      - ./etc/telegraf:/etc/telegraf
+    command: /bin/bash -c "telegraf --config /etc/telegraf/telegraf.conf"

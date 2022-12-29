@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -50,7 +50,7 @@ func Diff(source Content, target Content) string {
 func CnosDBQuery() *Content {
 	// curl -i -u "username:password" -H "Accept: application/json" -XPOST ""http://localhost:31007/api/v1/sql\?db=telegraf -d 'SELECT * from cpu limit 10'
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodPost, "http://localhost:31007/api/v1/sql?db=telegraf", bytes.NewReader([]byte("SELECT * from cpu limit 10")))
+	req, err := http.NewRequest(http.MethodPost, "http://localhost:31007/api/v1/sql?db=telegraf", bytes.NewReader([]byte("SELECT * from cpu order by time asc limit 10 ")))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -60,7 +60,12 @@ func CnosDBQuery() *Content {
 	if err != nil {
 		log.Fatal(err)
 	}
-	reader := bufio.NewReader(resp.Body)
-	fmt.Println(reader)
+	m := make([]map[string]interface{}, 1)
+	reader := json.NewDecoder(resp.Body)
+	if err = reader.Decode(&m); err != nil {
+		panic(err)
+	}
+	//reader := bufio.NewReader(resp.Body)
+	fmt.Printf("%v\n", m)
 	return nil
 }
